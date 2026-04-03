@@ -1,26 +1,4 @@
-//Frontend page:-
-// methane-frontend/
-// │
-// ├── public/
-// │
-// ├── src/
-// │   ├── components/
-// │   ├── data/
-// │   ├── hooks/
-// │   ├── lib/
-// │   ├── pages/
-// │   ├── App.tsx
-// │   ├── main.tsx
-// │   └── index.css
-// │
-// ├── .gitignore
-// ├── index.html
-// ├── package.json
-// ├── package-lock.json
-// ├── tsconfig.json
-// ├── tsconfig.app.json
-// ├── tsconfig.node.json
-// └── vite.config.ts
+
 
 import { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
@@ -316,7 +294,7 @@ const KpiCard = ({ icon, label, value, sub, type = "success", trend }) => (
 
 const SectionHeader = ({ badge, title, subtitle }) => (
   <div style={{ textAlign: "center", marginBottom: 48 }}>
-    {badge && <div style={{ marginBottom: 12 }}><Badge label={badge} type="success"/></div>}
+    {badge && <div style={{ marginBottom: 12 }}><Badge label={badge} type="success" /></div>}
     <h2 style={{ fontSize: 36, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.03em", marginBottom: 12 }}>{title}</h2>
     <p style={{ fontSize: 17, color: "#475569", lineHeight: 1.7, maxWidth: 560, margin: "0 auto" }}>{subtitle}</p>
   </div>
@@ -415,6 +393,7 @@ const HomePage = () => {
                       <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Conf: {d.conf}</div>
                     </div>
                   </div>
+                  //Styling
                 ))}
                 <div style={{ marginTop: 16, padding: 14, background: "#f0fdf4", borderRadius: 12, border: "1px solid #bbf7d0" }}>
                   <div style={{ fontSize: 12, color: "#166534", fontWeight: 600, marginBottom: 6 }}>🛰️ Stage 1 → Stage 2 → Stage 3</div>
