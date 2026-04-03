@@ -1,7 +1,3 @@
-Here is your content converted into a clean **README.md** format (simple and clear language):
-
----
-
 # 🌍 Satellite Methane Detection Problem
 
 ## 📌 Overview
