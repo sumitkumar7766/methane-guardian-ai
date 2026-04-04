@@ -1,4 +1,4 @@
-# 💼 Business Model – Methane Mitra
+# 💼 Business Model – Methane Guardian Ai
 
 ## Business Model Type
 **Methane Mitra follows a B2B SaaS (Business-to-Business Software as a Service) model.**
@@ -105,4 +105,4 @@ We can offer API access for other platforms and enterprise systems.
 ---
 
 ## One-Line Summary
-**Methane Mitra is a B2B SaaS climate intelligence platform that generates revenue through subscriptions, pay-per-analysis, enterprise licensing, premium ESG reporting, and API integrations.**
+**Methane Guardian Ai is a B2B SaaS climate intelligence platform that generates revenue through subscriptions, pay-per-analysis, enterprise licensing, premium ESG reporting, and API integrations.**
