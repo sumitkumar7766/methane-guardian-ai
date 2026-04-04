@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 
 import WarningIcon from "@mui/icons-material/Warning";
+import ReactMarkdown from "react-markdown";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("scan");
@@ -157,58 +158,80 @@ export default function App() {
 
   // --- Gemini API Configuration ---
   // Make sure your .env.local has: NEXT_PUBLIC_GEMINI_API_KEY=your_key
-  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-  console.log("Using Gemini API Key:", apiKey ? "✅ Present" : "❌ Missing");
-  const GEMINI_MODEL = "gemini-1.5-flash";
-  const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+  // const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  // console.log("Using Gemini API Key:", apiKey ? "✅ Present" : "❌ Missing");
+  // const GEMINI_MODEL = "gemini-1.5-flash";
+  // const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
   // --- Corrected callGemini Function ---
-  const callGemini = async (
-    prompt,
-    systemPrompt = "You are an expert environmental scientist.",
-  ) => {
+  // const callGemini = async (
+  //   prompt,
+  //   systemPrompt = "You are an expert environmental scientist.",
+  // ) => {
+  //   try {
+  //     const response = await fetch(BASE_URL, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         // System instruction ko alag se pass karna padta hai
+  //         system_instruction: {
+  //           parts: [{ text: systemPrompt }],
+  //         },
+  //         contents: [
+  //           {
+  //             parts: [{ text: prompt }],
+  //           },
+  //         ],
+  //         generationConfig: {
+  //           temperature: 0.2, // Analysis ke liye low temperature best hai
+  //           topP: 0.8,
+  //           maxOutputTokens: 1000,
+  //         },
+  //       }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       // Agar abhi bhi 404 aaye, toh console check karein
+  //       console.error("Gemini API Error Detail:", data);
+  //       throw new Error(data.error?.message || "API Error");
+  //     }
+
+  //     return (
+  //       data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from AI"
+  //     );
+  //   } catch (error) {
+  //     console.error("Gemini Error:", error);
+  //     return "AI Error: " + error.message;
+  //   }
+  // };
+
+  const callAI = async (prompt) => {
     try {
-      const response = await fetch(BASE_URL, {
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
+          Authorization:
+            "Bearer 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",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          // System instruction ko alag se pass karna padta hai
-          system_instruction: {
-            parts: [{ text: systemPrompt }],
-          },
-          contents: [
-            {
-              parts: [{ text: prompt }],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.2, // Analysis ke liye low temperature best hai
-            topP: 0.8,
-            maxOutputTokens: 1000,
-          },
+          model: "meta-llama/llama-3-8b-instruct",
+          messages: [{ role: "user", content: prompt }],
         }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Agar abhi bhi 404 aaye, toh console check karein
-        console.error("Gemini API Error Detail:", data);
-        throw new Error(data.error?.message || "API Error");
-      }
-
-      return (
-        data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from AI"
-      );
-    } catch (error) {
-      console.error("Gemini Error:", error);
-      return "AI Error: " + error.message;
+      const data = await res.json();
+      console.log("AI Response Data:", data);
+      return data.choices?.[0]?.message?.content || "No AI response";
+    } catch (err) {
+      console.error(err.message);
+      return "AI error";
     }
   };
-
-  console.log("Calling API:", "http://localhost:8000/alerts");
 
   const generateAIIntelligence = async (data) => {
     setAiLoading(true);
@@ -229,7 +252,7 @@ export default function App() {
           "summary": ""
         }
         `;
-      const insight = await callGemini(insightPrompt);
+      const insight = await callAI(insightPrompt);
       setAiInsight(insight);
     } catch (err) {
       setAiInsight("AI analysis unavailable.");
@@ -243,10 +266,7 @@ export default function App() {
     setActiveAiTool("mitigation");
     try {
       const planPrompt = `Technical mitigation plan for ${results.detected_source?.node_id} at ${results.max_methane_concentration_ppm} PPM and ${results.stage2_physics?.estimated_emission_rate_kg_hr} kg/hr. 3 prioritized technical steps.`;
-      const plan = await callGemini(
-        planPrompt,
-        "You are a lead response engineer.",
-      );
+      const plan = await callAI(planPrompt);
       setAiPlan(plan);
     } catch (err) {
       setAiPlan("Error generating plan.");
@@ -260,10 +280,7 @@ export default function App() {
     setActiveAiTool("compliance");
     try {
       const prompt = `Evaluate if a leak of ${results.max_methane_concentration_ppm} PPM and ${results.stage2_physics?.estimated_emission_rate_kg_hr} kg/hr violates standard industrial methane regulations (EPA/EU). Give a short legal verdict.`;
-      const verdict = await callGemini(
-        prompt,
-        "You are an environmental law consultant.",
-      );
+      const verdict = await callAI(prompt);
       setAiCompliance(verdict);
     } catch (err) {
       setAiCompliance("Compliance check failed.");
@@ -277,7 +294,7 @@ export default function App() {
     setActiveAiTool("impact");
     try {
       const prompt = `Based on a leak of ${results.stage2_physics?.estimated_emission_rate_kg_hr} kg/hr of methane, calculate the equivalent CO2 impact and the potential local warming effect over 20 years. Be concise.`;
-      const forecast = await callGemini(prompt, "You are a climate scientist.");
+      const forecast = await callAI(prompt);
       setAiImpact(forecast);
     } catch (err) {
       setAiImpact("Impact forecast failed.");
@@ -291,11 +308,7 @@ export default function App() {
     setActiveAiTool("news");
     try {
       const prompt = `Search for any recent news or reports about gas leaks, industrial accidents, or methane plumes near coordinates ${lat}, ${lng} (Bhopal region). Are there any known historical issues with industrial facilities there?`;
-      const news = await callGemini(
-        prompt,
-        "You are a investigative journalist researching industrial safety.",
-        true,
-      );
+      const news = await callAI(prompt);
       setAiNews(news);
     } catch (err) {
       setAiNews("Grounded search unavailable.");
@@ -534,9 +547,9 @@ export default function App() {
         </div>
       </nav>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1">
         {/* 2. SIDEBAR */}
-        <aside className="w-80 border-r border-slate-100 bg-white p-6 flex flex-col gap-6 overflow-y-auto z-10 custom-scrollbar">
+        <aside className="w-80 border-r border-slate-100 bg-white p-6 flex flex-col gap-6 overflow-y-auto z-20 h-full">
           <button
             onClick={fetchReport}
             disabled={loading}
@@ -977,19 +990,20 @@ export default function App() {
                     </span>
                   </div>
                 ) : (
-                  <div className="text-[11px] text-slate-700 font-medium leading-relaxed">
-                    {activeAiTool === "narrative" &&
-                      (aiInsight
-                        ? `"${aiInsight}"`
-                        : "Generating expert narrative...")}
-                    {activeAiTool === "mitigation" &&
-                      (aiPlan || "Awaiting mitigation strategy...")}
-                    {activeAiTool === "compliance" &&
-                      (aiCompliance || "Awaiting legal audit...")}
-                    {activeAiTool === "impact" &&
-                      (aiImpact || "Awaiting impact forecast...")}
-                    {activeAiTool === "news" &&
-                      (aiNews || "Searching grounded incidents...")}
+                  <div className="text-[11px] text-slate-700 font-medium leading-relaxed prose prose-sm max-w-none">
+                    <ReactMarkdown>
+                      {activeAiTool === "narrative"
+                        ? aiInsight || "Generating expert narrative..."
+                        : activeAiTool === "mitigation"
+                          ? aiPlan || "Awaiting mitigation strategy..."
+                          : activeAiTool === "compliance"
+                            ? aiCompliance || "Awaiting legal audit..."
+                            : activeAiTool === "impact"
+                              ? aiImpact || "Awaiting impact forecast..."
+                              : activeAiTool === "news"
+                                ? aiNews || "Searching grounded incidents..."
+                                : ""}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>
@@ -1102,7 +1116,7 @@ export default function App() {
         </aside>
 
         {/* 3. MAIN DISPLAY */}
-        <main className="flex-1 relative bg-slate-100 overflow-hidden">
+        <main className="fixed inset-0 z-0">
           {/* FLOATING INTERFACE */}
           <div className="absolute top-6 left-6 z-[1000] space-y-3">
             <div className="bg-white/90 backdrop-blur-xl shadow-2xl border border-white p-4 rounded-3xl flex items-center gap-5">
@@ -1131,7 +1145,8 @@ export default function App() {
 
           {/* RESULTS OVERLAY */}
           {results && !loading && (
-            <div className="absolute bottom-8 left-8 right-8 z-[1000] grid grid-cols-1 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom-10 duration-500">
+            <div className="absolute bottom-8 left-[340px] right-8 z-[1000] grid grid-cols-1 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom-10 duration-500">
+              {" "}
               <div className="bg-white p-5 rounded-3xl shadow-2xl border border-slate-100 flex items-center gap-4 hover:-translate-y-1 transition-all">
                 <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center">
                   <AlertCircle size={24} />

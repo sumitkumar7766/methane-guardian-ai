@@ -20,6 +20,7 @@ from pydantic import BaseModel
 from generator import generate_stream, generate_alert
 from agent_filter_1 import filter_false_positive
 from agent_report import generate_report
+from chatbot import explain_alert
 
 # ==========================================
 # 1. FASTAPI SETUP & CORS
@@ -330,3 +331,8 @@ def get_report(count: int = 10):
         return generate_report(processed)
     except NameError:
         return {"msg": "Fallback: reporting modules missing"}
+
+@app.post("/chat")
+def chat(alert: dict):
+    result = explain_alert(alert)
+    return {"response": result}
