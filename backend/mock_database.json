@@ -1,0 +1,132 @@
+[
+  {
+    "timestamp": "2026-04-03T21:41:14.568162",
+    "location": {
+      "latitude": 15.959103752227998,
+      "longitude": 92.46367654884321
+    },
+    "methane_flux": 182.82,
+    "wind": {
+      "speed": 1.97,
+      "direction": 299
+    },
+    "confidence": 0.95
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568399",
+    "location": {
+      "latitude": 22.903162234322956,
+      "longitude": 92.06179978232807
+    },
+    "methane_flux": 85.79,
+    "wind": {
+      "speed": 0.94,
+      "direction": 184
+    },
+    "confidence": 0.9
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568404",
+    "location": {
+      "latitude": 18.537294139637716,
+      "longitude": 93.6529719759375
+    },
+    "methane_flux": 434.09,
+    "wind": {
+      "speed": 15.68,
+      "direction": 61
+    },
+    "confidence": 0.95
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568408",
+    "location": {
+      "latitude": 14.71091102392206,
+      "longitude": 92.8245593963918
+    },
+    "methane_flux": 478.96,
+    "wind": {
+      "speed": 17.63,
+      "direction": 236
+    },
+    "confidence": 0.87
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568411",
+    "location": {
+      "latitude": 33.263384665764335,
+      "longitude": 76.92268115214254
+    },
+    "methane_flux": 376.92,
+    "wind": {
+      "speed": 14.64,
+      "direction": 132
+    },
+    "confidence": 0.78
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568414",
+    "location": {
+      "latitude": 30.88945808670572,
+      "longitude": 89.56551841802572
+    },
+    "methane_flux": 282.25,
+    "wind": {
+      "speed": 12.08,
+      "direction": 55
+    },
+    "confidence": 0.84
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568418",
+    "location": {
+      "latitude": 8.420527183768376,
+      "longitude": 92.61493501008371
+    },
+    "methane_flux": 126.63,
+    "wind": {
+      "speed": 10.76,
+      "direction": 33
+    },
+    "confidence": 0.62
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568420",
+    "location": {
+      "latitude": 19.464718032001535,
+      "longitude": 68.79397058774185
+    },
+    "methane_flux": 276.78,
+    "wind": {
+      "speed": 9.9,
+      "direction": 91
+    },
+    "confidence": 0.76
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568423",
+    "location": {
+      "latitude": 30.37748733957529,
+      "longitude": 70.49551245681982
+    },
+    "methane_flux": 174.32,
+    "wind": {
+      "speed": 14.24,
+      "direction": 73
+    },
+    "confidence": 0.81
+  },
+  {
+    "timestamp": "2026-04-03T21:41:14.568425",
+    "location": {
+      "latitude": 21.612357832863317,
+      "longitude": 69.73822201159209
+    },
+    "methane_flux": 164.89,
+    "wind": {
+      "speed": 4.48,
+      "direction": 96
+    },
+    "confidence": 0.55
+  }
+]
