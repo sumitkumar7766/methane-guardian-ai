@@ -175,7 +175,7 @@ async def predict_methane_leak(file: UploadFile = File(...)):
                 # YEH LINE ADD KAREIN: Physics metrics for frontend
                 "stage2_physics": {
                     "estimated_emission_rate_kg_hr": round(ch4_concentration.mean().item() * 45.5, 2), # Simulated calculation
-                    "max_methane_ppm": round(ch4_concentration.max().item(), 4)
+                    "max_methane_ppm": round(ch4_concentration.max().item(), 4),
                 },
                 "detected_source": {
                     "node_id": f"REF-NODE-{predicted_source_idx}",
@@ -256,6 +256,20 @@ async def predict_by_location(request: LocationRequest):
             infra_types = ["Underground Pipeline", "Compression Valve", "Storage Tank", "Extraction Well"]
             primary_type = infra_types[primary_idx % len(infra_types)]
 
+            def find_nearest_facility(lat, lng):
+                min_dist = float("inf")
+                nearest = None
+
+                for infra in GLOBAL_INFRASTRUCTURE:
+                    dist = ((lat - infra["lat"])**2 + (lng - infra["lng"])**2)
+                    if dist < min_dist:
+                        min_dist = dist
+                        nearest = infra
+
+                return nearest
+
+        facility = find_nearest_facility(final_lat, final_lng)
+
         return JSONResponse(content={
             "status": "success",
             "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -275,7 +289,8 @@ async def predict_by_location(request: LocationRequest):
                         "speed_m_s": wind_speed,
                         "direction_degrees": wind_dir
                     },
-                    "model_used": "Physics-Informed Neural Network (PINN)"
+                    "model_used": "Physics-Informed Neural Network (PINN)",
+                    "peak_concentration_ppm": max_ppm,
                 },
                 "stage3_graph": {
                     "primary_source": {
@@ -297,6 +312,15 @@ async def predict_by_location(request: LocationRequest):
                     ],
                     "model_used": "Graph Attention Network (GAT)"
                 },
+                
+                "attributed_facility": {
+                    "name": facility["name"],
+                    "type": facility["type"],
+                    "lat": facility["lat"],
+                    "lng": facility["lng"],
+                    "status": facility["status"]
+                } if facility else None,
+
                 "final_assessment": {
                     "alert_level": "CRITICAL" if primary_confidence > 75 and max_ppm > 5 else "REVIEW_NEEDED",
                     "action_required": "Dispatch drone to coordinates immediately." if primary_confidence > 75 else "Monitor satellite feeds for the next 48 hours."

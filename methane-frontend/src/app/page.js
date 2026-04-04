@@ -265,7 +265,7 @@ export default function App() {
     setAiLoading(true);
     setActiveAiTool("mitigation");
     try {
-      const planPrompt = `Technical mitigation plan for ${results.detected_source?.node_id} at ${results.max_methane_concentration_ppm} PPM and ${results.stage2_physics?.estimated_emission_rate_kg_hr} kg/hr. 3 prioritized technical steps.`;
+      const planPrompt = `Technical mitigation plan for ${results.detected_source?.node_id} at ${results.stage2_physics?.peak_concentration_ppm || results.max_methane_concentration_ppm} PPM and ${results.stage2_physics?.estimated_emission_rate_kg_hr} kg/hr. 3 prioritized technical steps.`;
       const plan = await callAI(planPrompt);
       setAiPlan(plan);
     } catch (err) {
@@ -1156,7 +1156,8 @@ export default function App() {
                     Peak Concentration
                   </p>
                   <p className="text-2xl font-black text-slate-900">
-                    {results.max_methane_concentration_ppm}{" "}
+                    {results.stage2_physics?.peak_concentration_ppm ||
+                      results.max_methane_concentration_ppm}{" "}
                     <span className="text-[10px] text-slate-400 font-bold">
                       PPM
                     </span>
@@ -1188,13 +1189,27 @@ export default function App() {
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">
                       Attributed Facility
                     </p>
+
                     <span className="text-[9px] font-black px-2 py-1 bg-emerald-600 text-white rounded-lg uppercase">
-                      {results.confidence_score_percent}% Conf.
+                      {results.confidence_score_percent || 0}% Conf.
                     </span>
                   </div>
+
+                  {/* Facility Name */}
                   <p className="text-lg font-black text-slate-900 leading-tight">
-                    {results.detected_source?.node_id}
+                    {results.attributed_facility?.name ||
+                      results.detected_source?.node_id ||
+                      "Unknown Facility"}
                   </p>
+
+                  {/* 🔥 NEW: Facility Type + Location */}
+                  {results.attributed_facility && (
+                    <p className="text-xs text-slate-400 mt-1">
+                      {results.attributed_facility.type} •{" "}
+                      {results.attributed_facility.lat?.toFixed(2)},{" "}
+                      {results.attributed_facility.lng?.toFixed(2)}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
