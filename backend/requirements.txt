@@ -19,3 +19,8 @@ requests
 transformers
 timm
 einops
+pydantic
+python-multipart
+torch
+torch_geometric
+h5netcdf

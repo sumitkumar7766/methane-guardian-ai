@@ -83,7 +83,7 @@ export default function App() {
         console.error("API Error:", data);
       }
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.log("Fetch error:", err.message);
     } finally {
       setLoadingAlerts(false);
     }
@@ -158,6 +158,7 @@ export default function App() {
   // --- Gemini API Configuration ---
   // Make sure your .env.local has: NEXT_PUBLIC_GEMINI_API_KEY=your_key
   const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  console.log("Using Gemini API Key:", apiKey ? "✅ Present" : "❌ Missing");
   const GEMINI_MODEL = "gemini-1.5-flash";
   const BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
@@ -206,6 +207,8 @@ export default function App() {
       return "AI Error: " + error.message;
     }
   };
+
+  console.log("Calling API:", "http://localhost:8000/alerts");
 
   const generateAIIntelligence = async (data) => {
     setAiLoading(true);
@@ -425,11 +428,11 @@ export default function App() {
         <div className="flex items-center gap-6">
           <div className="hidden md:flex flex-col text-right">
             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
-              Sentinel-5P Link
+              USE Sentinel-5P
             </span>
             <span className="text-xs font-bold text-emerald-600 flex items-center gap-1.5 justify-end">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>{" "}
-              SYSTEM ACTIVE
+              SYSTEM OFFLINE
             </span>
           </div>
           <div className="w-10 h-10 bg-slate-100 rounded-2xl border border-slate-200 flex items-center justify-center text-slate-400">
