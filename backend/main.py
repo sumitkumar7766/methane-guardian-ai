@@ -171,8 +171,13 @@ async def predict_methane_leak(file: UploadFile = File(...)):
             "status": "success",
             "pipeline_results": {
                 "max_methane_concentration_ppm": round(ch4_concentration.max().item(), 4),
+                # YEH LINE ADD KAREIN: Physics metrics for frontend
+                "stage2_physics": {
+                    "estimated_emission_rate_kg_hr": round(ch4_concentration.mean().item() * 45.5, 2), # Simulated calculation
+                    "max_methane_ppm": round(ch4_concentration.max().item(), 4)
+                },
                 "detected_source": {
-                    "node_id": predicted_source_idx,
+                    "node_id": f"REF-NODE-{predicted_source_idx}",
                     "location_x": node_coords_x[predicted_source_idx].item(),
                     "location_y": node_coords_y[predicted_source_idx].item(),
                     "local_concentration": round(mapped_ch4_values[predicted_source_idx].item(), 4)

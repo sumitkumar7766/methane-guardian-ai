@@ -352,38 +352,131 @@ export default function App() {
     const L = window.L;
 
     try {
-      await new Promise((r) => setTimeout(r, 1500));
-      const mockData = {
-        alert_level: "CRITICAL",
-        confidence_score_percent: 94.2,
-        max_methane_concentration_ppm: 4.82,
-        detected_source: { node_id: "Refinery-BH-09" },
-        stage2_physics: {
-          estimated_emission_rate_kg_hr: 124.5,
-          max_methane_ppm: 4.82,
+      const response = await fetch("http://localhost:8000/predict-location", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // API Key ki line maine hata di hai kyunki aapke backend mein nahi hai
         },
-      };
+        body: JSON.stringify({
+          lat: parseFloat(lat),
+          lng: parseFloat(lng),
+        }),
+      });
 
-      setResults(mockData);
+      if (!response.ok) throw new Error("Backend connection failed");
+
+      const data = await response.json();
+
+      // ✅ Sabse zaroori step: Backend se data extract karna
+      // Aapka backend "pipeline_results" key ke andar sara data bhej raha hai
+      const aiResults = data.pipeline_results;
+
+      setResults(aiResults);
       setShowAiHub(true);
 
+      // Map Logic
       if (leafletMap.current && L) {
-        leafletMap.current.flyTo([parseFloat(lat), parseFloat(lng)], 13, {
+        // Backend se mili exact primary source ki location
+        const sourceLat = aiResults.stage3_graph.primary_source.lat;
+        const sourceLng = aiResults.stage3_graph.primary_source.lng;
+
+        leafletMap.current.flyTo([sourceLat, sourceLng], 13, {
           duration: 2,
         });
-        L.marker([parseFloat(lat), parseFloat(lng)])
+
+        L.marker([sourceLat, sourceLng])
           .addTo(leafletMap.current)
+          .bindPopup(
+            `<b>Target:</b> ${aiResults.stage3_graph.primary_source.infrastructure_type}`,
+          )
           .openPopup();
-        L.circle([parseFloat(lat), parseFloat(lng)], {
-          color: "#ef4444",
+
+        L.circle([sourceLat, sourceLng], {
+          color:
+            aiResults.final_assessment.alert_level === "CRITICAL"
+              ? "#ef4444"
+              : "#eab308",
           fillOpacity: 0.4,
           radius: 800,
         }).addTo(leafletMap.current);
       }
 
-      generateAIIntelligence(mockData);
+      // Gemini ko data bhejna
+      generateAIIntelligence(aiResults);
     } catch (err) {
-      console.error(err);
+      console.error("Backend Error:", err);
+      alert(
+        "Backend se connect nahi ho paya. Make sure uvicorn is running on port 8000",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAction2 = async () => {
+    if (!file) return alert("Please select a .nc satellite file first");
+
+    setLoading(true);
+    setResults(null);
+    setShowAiHub(false);
+    setActiveAiTool("narrative");
+    const L = window.L;
+
+    // 1. FormData taiyar karein (File upload ke liye zaroori hai)
+    const formData = new FormData();
+    formData.append("file", file); // 'file' wahi state hai jisme aapne input se file save ki thi
+
+    try {
+      // 2. API Call (X-API-Key ki zaroorat nahi hai aapke current backend mein)
+      const response = await fetch("http://localhost:8000/predict", {
+        method: "POST",
+        body: formData, // JSON.stringify nahi use karna yahan
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "File processing failed");
+      }
+
+      const data = await response.json();
+
+      // 3. Data Extraction
+      // Note: Aapka backend "/predict" ke liye direct "pipeline_results" bhej raha hai
+      const aiResults = data.pipeline_results;
+      setResults(aiResults);
+      setShowAiHub(true);
+
+      // 4. Leaflet Map Update
+      if (leafletMap.current && L) {
+        // Kyunki file upload mein coordinates fixed nahi hote,
+        // hum backend se mile x, y coordinates ko use kar sakte hain ya user ke input wale lat/lng
+        const targetLat = parseFloat(lat);
+        const targetLng = parseFloat(lng);
+
+        leafletMap.current.flyTo([targetLat, targetLng], 14, {
+          duration: 2,
+        });
+
+        L.marker([targetLat, targetLng])
+          .addTo(leafletMap.current)
+          .bindPopup(
+            `<b>Plume Detected:</b> Node ${aiResults.detected_source.node_id}`,
+          )
+          .openPopup();
+
+        L.circle([targetLat, targetLng], {
+          color: "#ef4444",
+          fillOpacity: 0.5,
+          radius: 1000, // 1km radius plume visualization
+        }).addTo(leafletMap.current);
+      }
+
+      // 5. Gemini AI Analysis trigger
+      generateAIIntelligence(aiResults);
+    } catch (err) {
+      console.error("Upload Error:", err);
+      alert(`Error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -687,7 +780,7 @@ export default function App() {
                   </p>
                 </div>
                 <button
-                  onClick={handleAction}
+                  onClick={handleAction2}
                   disabled={!file || loading}
                   className="w-full bg-emerald-600 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-emerald-700 transition-all disabled:bg-slate-200"
                 >
