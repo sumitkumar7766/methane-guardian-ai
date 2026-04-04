@@ -1,1 +1,18 @@
 preprocess/pipeline/dataset
+
+# ❌ Virtual environments
+venv/
+env/
+gnn-env/
+
+# ❌ Python cache
+__pycache__/
+*.pyc
+
+# ❌ Large ML files
+*.pth
+*.pt
+*.dylib
+
+# ❌ OS files
+.DS_Store
