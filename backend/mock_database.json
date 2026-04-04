@@ -1,7 +1,0 @@
-[
-  { "id": 1, "lat": 31.9686, "lng": -99.9018, "location": "Permian Basin, Texas", "ppm": 5.4, "confidence": 92, "node": "Pipeline-TX-04", "status": "critical" },
-  { "id": 2, "lat": 22.2587, "lng": 71.1924, "location": "Gujarat Refinery, India", "ppm": 3.2, "confidence": 85, "node": "Facility-IN-01", "status": "critical" },
-  { "id": 3, "lat": 26.0667, "lng": 50.5577, "location": "Awali Oil Field, Bahrain", "ppm": 6.8, "confidence": 97, "node": "Well-BH-99", "status": "critical" },
-  { "id": 4, "lat": 53.5461, "lng": -113.4938, "location": "Alberta Sands, Canada", "ppm": 1.9, "confidence": 65, "node": "Sector-AB-12", "status": "review" },
-  { "id": 5, "lat": -22.9068, "lng": -43.1729, "location": "Offshore Rig, Brazil", "ppm": 4.1, "confidence": 88, "node": "Rig-BR-07", "status": "critical" }
-]
